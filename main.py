@@ -1,33 +1,8 @@
 from fastapi import FastAPI,Body
 from fastapi.responses import HTMLResponse
+from controller.jsonRead import movies, save_json_data
+from schema.movie import Movies
 
-
-
-movies = [
-    {
-        'id': 1,
-        'title': 'Avatar',
-        'overview': "En un exuberante planeta llamado Pandora viven los Na'vi, seres que ...",
-        'year': '2010',
-        'rating': 7.8,
-        'category': 'anime'    
-    },
-        {
-        'id': 2,
-        'title': 'Avatar',
-        'overview': "En un exuberante planeta llamado Pandora viven los Na'vi, seres que ...",
-        'year': '2009',
-        'rating': 7.8,
-        'category': 'comedia'    
-    },   {
-        'id': 3,
-        'title': 'Avatar',
-        'overview': "En un exuberante planeta llamado Pandora viven los Na'vi, seres que ...",
-        'year': '2011',
-        'rating': 7.8,
-        'category': 'accion'    
-    } 
-]
 
 app = FastAPI()
 app.title = "Peliculas Fast-Api"
@@ -55,5 +30,27 @@ def get_movies_by_querys_category(category: str, year:int ):
     return []
 
 @app.post('/movies',tags=['movies'])
-def create_movie():
-    pass
+def create_movie(movie: Movies):
+    movies.append(movie.dict())
+    save_json_data(movies)
+    return "Save Data "
+
+@app.put('/movies/{movie_id}', tags=['movies'])
+def update_movie(movie_id: int, movie: Movies):
+    for item in movies:
+        if item["id"] == movie_id:
+            item['title'] = movie.title
+            item['overview'] = movie.overview
+            item['year'] = movie.year
+            item['rating'] = movie.rating
+            item['category'] = movie.category
+    save_json_data(movies)
+    return "Update Movie "
+
+@app.delete('/movies/{movie_id}', tags=['movies'])
+def delete_movie(movie_id: int):
+    for i in movies:
+        if i["id"] == movie_id:
+            movies.remove(i)
+    save_json_data(movies)
+    return f'Delete movie {movie_id}'

@@ -22,5 +22,13 @@
         "year": 2011,
         "rating": 7.8,
         "category": "anime"
+    },
+    {
+        "id": 7,
+        "title": "Wamda",
+        "overview": "Pelicula de terror",
+        "year": 2023,
+        "rating": 5.5,
+        "category": "Terror"
     }
 ]
