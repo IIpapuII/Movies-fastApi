@@ -37,31 +37,23 @@ def get_movies_by_querys_category(category: str = Query(min_length=5, max_length
 @movie_router.post('/movies',tags=['movies'], response_model= dict, status_code=201)
 def create_movie(movie: Movies):
     db = session()
-    new_movie = MovieModel(**movie.dict())
-    db.add(new_movie)
-    db.commit()
+    MovieService(db).create_movie(movie)
     return JSONResponse(status_code=201, content={"message": "Se ha registrado la pelicula"})
 
 @movie_router.put('/movies/{movie_id}', tags=['movies'])
 def update_movie(movie_id: int, movie: Movies):
     db = session()
-    result = db.query(MovieModel).filter(MovieModel.id == movie_id).first()
+    result = MovieService(db).get_movie(movie_id)
     if not result:
         return JSONResponse(status_code=404,content={"message": "Se ha registrado la pelicula"})
-    result.title = movie.title
-    result.overview = movie.overview
-    result.year = movie.year
-    result.rating = movie.rating
-    result.category = movie.category
-    db.commit()
+    MovieService(db).update_movie(movie_id,movie)
     return JSONResponse(status_code=200, content={'menssage': "Pelicula actualizada"})
 
 @movie_router.delete('/movies/{movie_id}', tags=['movies'])
 def delete_movie(movie_id: int):
     db = session()
-    result = db.query(MovieModel).filter(MovieModel.id == movie_id).first()
+    result = get_movie(movie_id)
     if not result:
         return JSONResponse(status_code=404,content={"message": "Se ha registrado la pelicula"})
-    db.delete(result)
-    db.commit()
+    MovieService(db).delete_movie(movie_id)
     return f'Delete movie {movie_id}' 
